@@ -21,28 +21,35 @@ jobs:
       - name: Authenticate with Google Cloud
         run: |
           echo '${{ secrets.FCM_SERVICE_ACCOUNT }}' > service-account.json
-          cat service-account.json  # Debugging step (optional, remove in production)
           gcloud auth activate-service-account --key-file=service-account.json
 
       - name: Get OAuth Token
         run: |
           echo "ACCESS_TOKEN=$(gcloud auth application-default print-access-token)" >> $GITHUB_ENV
 
-      - name: Send Notification
+      - name: Send Silent Notification
         run: |
-          curl -X POST "https://fcm.googleapis.com/v1/projects/YOUR_PROJECT_ID/messages:send" \
+          curl -X POST "https://fcm.googleapis.com/v1/projects/flight-tracker-b0eda/messages:send" \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
           -H "Content-Type: application/json" \
           -d '{
             "message": {
               "topic": "all_users",
-              "notification": {
-                "title": "Flight Update!",
-                "body": "New flight updates available.",
-                "sound": "default"
-              },
               "data": {
                 "action": "fetchFlightUpdates"
+              },
+              "android": {
+                "priority": "high"
+              },
+              "apns": {
+                "headers": {
+                  "apns-priority": "5"
+                },
+                "payload": {
+                  "aps": {
+                    "content-available": 1
+                  }
+                }
               }
             }
           }'
