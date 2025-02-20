@@ -1,4 +1,4 @@
 on:
   workflow_dispatch:  # Allows manual trigger
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/15 * * * *" 
