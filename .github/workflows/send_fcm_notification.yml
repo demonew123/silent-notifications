@@ -20,7 +20,8 @@ jobs:
 
       - name: Authenticate with Google Cloud
         run: |
-          echo "${{ secrets.FCM_SERVICE_ACCOUNT }}" > service-account.json
+          echo '${{ secrets.FCM_SERVICE_ACCOUNT }}' > service-account.json
+          cat service-account.json  # Debugging step (optional, remove in production)
           gcloud auth activate-service-account --key-file=service-account.json
 
       - name: Get OAuth Token
