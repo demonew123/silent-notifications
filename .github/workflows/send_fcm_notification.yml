@@ -1,46 +1,6 @@
-name: Send Silent Notification
-
 on:
+  push:
+    branches:
+      - main
   schedule:
-    - cron: "*/15 * * * *"  # Runs every 15 minutes
-
-jobs:
-  send_notification:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Install Google Auth CLI
-        run: |
-          sudo apt update
-          sudo apt install -y curl jq
-
-      - name: Authenticate with Google Cloud
-        run: |
-          echo "${{ secrets.FCM_SERVICE_ACCOUNT }}" > service-account.json
-          gcloud auth activate-service-account --key-file=service-account.json
-
-      - name: Get OAuth Token
-        run: |
-          echo "ACCESS_TOKEN=$(gcloud auth application-default print-access-token)" >> $GITHUB_ENV
-
-      - name: Send Notification to All Users
-        run: |
-          curl -X POST "https://fcm.googleapis.com/v1/projects/flight-tracker-b0eda/messages:send" \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "message": {
-              "topic": "all_users",
-              "notification": {
-                "title": "Flight Update!",
-                "body": "New flight updates available.",
-                "sound": "default"
-              },
-              "data": {
-                "action": "fetchFlightUpdates"
-              }
-            }
-          }'
+    - cron: "*/15 * * * *"
